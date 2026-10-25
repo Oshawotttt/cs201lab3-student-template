@@ -188,8 +188,9 @@ public class Q1Test {
 
         private static boolean buildTree(WeirdNode inorderNode, WeirdNode preorderNode, WeirdNode postorderNode) {
 
-            int preorderHead = preorderNode.getTmpList().getFirst();
-            int postorderHead = postorderNode.getTmpList().getLast();
+            List<Integer> postList = postorderNode.getTmpList();
+            int preorderHead = preorderNode.getTmpList().get(0);
+            int postorderHead = postList.get(postList.size() - 1);
             if (preorderHead != postorderHead) return false;
 
             if (!inorderNode.build(preorderHead) || !preorderNode.build(preorderHead) || !postorderNode.build(preorderHead)) return false;
