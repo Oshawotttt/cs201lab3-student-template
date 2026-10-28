@@ -149,24 +149,22 @@ public class Q1Test {
                     int i = tmpList.indexOf(head);
                     if (i == -1) return false;
                     return split(head, tmpList.subList(0, i), tmpList.subList(i + 1, tmpList.size()));
+
                 } else if (type == TraversalType.PREORDER) {
-                    // head first, then left subtree, then right subtree
                     if (tmpList.isEmpty() || tmpList.get(0) != head) return false;
                     rest = tmpList.subList(1, tmpList.size());
+
                 } else {
-                    // left subtree, then right subtree, then head last
                     if (tmpList.isEmpty() || tmpList.get(tmpList.size() - 1) != head) return false;
                     rest = tmpList.subList(0, tmpList.size() - 1);
                 }
 
-                // left subtree is the leading run of elems < head
                 int j = 0;
                 while (j < rest.size() && rest.get(j) < head) j++;
                 return split(head, rest.subList(0, j), rest.subList(j, rest.size()));
             }
 
             private boolean split(int head, List<Integer> leftElems, List<Integer> rightElems) {
-                // left elems must all be < head, right elems all > head
                 if (!leftElems.isEmpty() && Collections.max(leftElems) > head) return false;
                 if (!rightElems.isEmpty() && Collections.min(rightElems) < head) return false;
 
@@ -198,7 +196,6 @@ public class Q1Test {
             if (!sameElems(inorderNode.getLeft(), preorderNode.getLeft(), postorderNode.getLeft())) return false;
             if (!sameElems(inorderNode.getRight(), preorderNode.getRight(), postorderNode.getRight())) return false;
 
-            // sameElems passed, so if one child is null all three are
             if (inorderNode.getLeft() != null
                     && !buildTree(inorderNode.getLeft(), preorderNode.getLeft(), postorderNode.getLeft())) return false;
             if (inorderNode.getRight() != null
@@ -217,7 +214,6 @@ public class Q1Test {
                 return "Invalid traversals";
             }
 
-            // all 6 ways to assign the 3 types to the 3 traversals
             int[][] perms = {
                 { 0, 1, 2 }, { 0, 2, 1 },
                 { 1, 0, 2 }, { 1, 2, 0 },
@@ -225,7 +221,6 @@ public class Q1Test {
             };
 
             for (int[] p : perms) {
-                // traversals[i] is assumed to be of type types[p[i]]
                 TraversalType[] assigned = { types[p[0]], types[p[1]], types[p[2]] };
 
                 String inorder = null, preorder = null, postorder = null;
@@ -242,11 +237,6 @@ public class Q1Test {
                 WeirdBST postorderBST = new WeirdBST(postorder, TraversalType.POSTORDER);
 
 
-
-
-                // boolean valid = false;
-
-                // valid = ;
 
                 if (buildTree(inorderBST.getHead(), preorderBST.getHead(), postorderBST.getHead())) {
                     StringBuilder sb = new StringBuilder();
