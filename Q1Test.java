@@ -73,90 +73,38 @@ public class Q1Test {
 
         private static class WeirdBST {
 
+            private List<Integer> elems;
+            private WeirdBST left;
+            private WeirdBST right;
             private TraversalType type;
-            private WeirdNode head;
 
-            public WeirdNode getHead() {
-                return head;
-            }
-
-            public WeirdBST(String traversal, TraversalType type) {
-                head = new WeirdNode(traversal, type);
+            private WeirdBST(List<Integer> elems, TraversalType type) {
+                this.elems = elems;
                 this.type = type;
             }
 
-        }
-
-        private static class WeirdNode {
-
-            private int elem;
-            private List<Integer> tmpList;
-
-            private WeirdNode right;
-            private WeirdNode left;
-
-            private TraversalType type;
-
-            private WeirdNode(String traversal, TraversalType type) {
-                tmpList = new ArrayList<>();
+            private WeirdBST(String traversal, TraversalType type) {
+                this(new ArrayList<>(), type);
                 for (String s : traversal.split("-")) {
-                    tmpList.add(Integer.parseInt(s.trim()));
+                    elems.add(Integer.parseInt(s.trim()));
                 }
-                this.type = type;
-            }
-
-            private int getElem() {
-                return elem;
-            }
-
-            private void setElem(int elem) {
-                this.elem = elem;
-            }
-
-            private List<Integer> getTmpList() {
-                return tmpList;
-            }
-
-            private void setTmpList(List<Integer> tmpList) {
-                this.tmpList = tmpList;
-            }
-
-            private WeirdNode getRight() {
-                return right;
-            }
-
-            private void setRight(WeirdNode right) {
-                this.right = right;
-            }
-
-            private WeirdNode getLeft() {
-                return left;
-            }
-
-            private void setLeft(WeirdNode left) {
-                this.left = left;
-            }
-
-            private WeirdNode(List<Integer> tmpList, TraversalType type) {
-                this.tmpList = new ArrayList<>(tmpList);
-                this.type = type;
             }
 
             private boolean build(int head) {
                 List<Integer> rest;
 
                 if (type == TraversalType.INORDER) {
-                    int i = tmpList.indexOf(head);
+                    int i = elems.indexOf(head);
                     if (i == -1) return false;
-                    return split(head, tmpList.subList(0, i), tmpList.subList(i + 1, tmpList.size()));
+                    return split(head, elems.subList(0, i), elems.subList(i + 1, elems.size()));
 
                 } else if (type == TraversalType.PREORDER) {
-                    if (tmpList.isEmpty() || tmpList.get(0) != head) return false;
-                    rest = tmpList.subList(1, tmpList.size());
+                    if (elems.isEmpty() || elems.get(0) != head) return false;
+                    rest = elems.subList(1, elems.size());
 
                 } else {
-                    if (tmpList.isEmpty() || tmpList.get(tmpList.size() - 1) != head) return false;
-                    rest = tmpList.subList(0, tmpList.size() - 1);
+                    if (elems.isEmpty() || elems.get(elems.size() - 1) != head) return false;
+                    rest = elems.subList(0, elems.size() - 1);
                 }
 
                 int j = 0;
@@ -168,38 +116,33 @@ public class Q1Test {
                 if (!leftElems.isEmpty() && Collections.max(leftElems) > head) return false;
                 if (!rightElems.isEmpty() && Collections.min(rightElems) < head) return false;
 
-                left = leftElems.isEmpty() ? null : new WeirdNode(leftElems, type);
-                right = rightElems.isEmpty() ? null : new WeirdNode(rightElems, type);
-                elem = head;
+                left = leftElems.isEmpty() ? null : new WeirdBST(leftElems, type);
+                right = rightElems.isEmpty() ? null : new WeirdBST(rightElems, type);
                 return true;
             }
         }
 
-        private static Set<Integer> elemSet(WeirdNode node) {
-            return node == null ? new HashSet<>() : new HashSet<>(node.getTmpList());
+        private static Set<Integer> elemSet(WeirdBST node) {
+            return node == null ? new HashSet<>() : new HashSet<>(node.elems);
         }
 
-        private static boolean sameElems(WeirdNode a, WeirdNode b, WeirdNode c) {
+        private static boolean sameElems(WeirdBST a, WeirdBST b, WeirdBST c) {
             Set<Integer> setA = elemSet(a);
             return setA.equals(elemSet(b)) && setA.equals(elemSet(c));
         }
 
-        private static boolean buildTree(WeirdNode inorderNode, WeirdNode preorderNode, WeirdNode postorderNode) {
+        private static boolean buildTree(WeirdBST inorder, WeirdBST preorder, WeirdBST postorder) {
 
-            List<Integer> postList = postorderNode.getTmpList();
-            int preorderHead = preorderNode.getTmpList().get(0);
-            int postorderHead = postList.get(postList.size() - 1);
-            if (preorderHead != postorderHead) return false;
+            int head = preorder.elems.get(0);
+            if (head != postorder.elems.get(postorder.elems.size() - 1)) return false;
 
-            if (!inorderNode.build(preorderHead) || !preorderNode.build(preorderHead) || !postorderNode.build(preorderHead)) return false;
+            if (!inorder.build(head) || !preorder.build(head) || !postorder.build(head)) return false;
 
-            if (!sameElems(inorderNode.getLeft(), preorderNode.getLeft(), postorderNode.getLeft())) return false;
-            if (!sameElems(inorderNode.getRight(), preorderNode.getRight(), postorderNode.getRight())) return false;
+            if (!sameElems(inorder.left, preorder.left, postorder.left)) return false;
+            if (!sameElems(inorder.right, preorder.right, postorder.right)) return false;
 
-            if (inorderNode.getLeft() != null
-                    && !buildTree(inorderNode.getLeft(), preorderNode.getLeft(), postorderNode.getLeft())) return false;
-            if (inorderNode.getRight() != null
-                    && !buildTree(inorderNode.getRight(), preorderNode.getRight(), postorderNode.getRight())) return false;
+            if (inorder.left != null && !buildTree(inorder.left, preorder.left, postorder.left)) return false;
+            if (inorder.right != null && !buildTree(inorder.right, preorder.right, postorder.right)) return false;
 
             return true;
         }
@@ -232,13 +175,9 @@ public class Q1Test {
                     }
                 }
 
-                WeirdBST inorderBST = new WeirdBST(inorder, TraversalType.INORDER);
-                WeirdBST preorderBST = new WeirdBST(preorder, TraversalType.PREORDER);
-                WeirdBST postorderBST = new WeirdBST(postorder, TraversalType.POSTORDER);
-
-
-
-                if (buildTree(inorderBST.getHead(), preorderBST.getHead(), postorderBST.getHead())) {
+                if (buildTree(new WeirdBST(inorder, TraversalType.INORDER),
+                              new WeirdBST(preorder, TraversalType.PREORDER),
+                              new WeirdBST(postorder, TraversalType.POSTORDER))) {
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < 3; i++) {
                         if (i > 0) sb.append(", ");
